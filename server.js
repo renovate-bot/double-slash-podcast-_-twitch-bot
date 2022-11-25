@@ -5,7 +5,11 @@ const regexpCommand = new RegExp(/^!([a-zA-Z0-9]+)(?:\W+)?(.*)?/);
 
 const client = new tmi.Client({
   connection: {
-    reconnect: true
+    reconnect: true,
+    secure: true
+  },
+  options: {
+    debug: true
   },
   channels: [
     'doubleslash_dev'
@@ -31,11 +35,8 @@ const commands = {
   youtube: {
     response: 'https://www.youtube.com/channel/UCp5DGBAX2XNJXeOVAo7bICQ'
   },
-  commands: {
+  command: {
     response: () => { return `Toutes les commandes disponibles:     ${Object.keys(commands).toString()}`}
-  },
-  project: {
-    response: 'On crash test FLEET'
   },
   discord: {
     response: 'discord.gg/6JUFtezW'
@@ -54,6 +55,12 @@ const commands = {
     iCal/Outlook... webcal://api.twitch.tv/helix/schedule/icalendar?broadcaster_id=577092272: 
     `
   },
+  stack: {
+    response: 'NuxtJS - PlopJS'
+  },
+  project: {
+    response: "On créer un générateur de template pour faciliter l'intégration de nouvel épisode"
+  },
   // XXXXXXXX: {
   //   response: 'XXXX'
   // },
@@ -65,7 +72,7 @@ client.on('message', async (channel, context, message,self) => {
 
   const [raw, command, argument] = message.match(regexpCommand)
 
-  const { response } = commands[command] || {};
+  const { response } = commands[command] || client.say(channel, "command => 404 ");
 
   if (typeof response === 'function') {
     client.say(channel, response(argument));
